@@ -20,7 +20,9 @@
   },
   "homepage": "https://github.com/mattcontest/se_project_express#readme",
   "dependencies": {
-    "express": "^4.21.2"
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "mongoose": "^8.10.0"
   },
   "devDependencies": {
     "eslint": "^8.57.1",
