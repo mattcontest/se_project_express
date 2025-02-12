@@ -9,7 +9,24 @@ const getUsers = (req, res) => {
     })
     .catch((err) => {
       console.error(err);
+      return res.status(500).send({ message: err.message });
     });
 };
 
-module.exports = { getUsers };
+const createUser = (req, res) => {
+  const { name, avatar } = req.body;
+  console.log("Req.body", name, avatar);
+
+  User.create({ name, avatar })
+    .then((user) => {
+      res.status(201).send(user);
+    })
+    .catch((err) => {
+      if (err.name === "ValidationError") {
+        return res.status(400).send({ message: err.message });
+      }
+      return res.status(500).send({ message: err.message });
+    });
+};
+
+module.exports = { getUsers, createUser };
