@@ -24,18 +24,19 @@ const clothingItemSchema = new mongoose.Schema({
       message: "You must eneter a valid URL",
     },
     owner: {
-      type: ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "user",
       required: true,
     },
     likes: {
-      type: [ObjectId],
-      ref: user,
+      type: [{ type: mongoose.Schema.Types.ObjectId, ref: "user" }],
+      default: [],
     },
     createdAt: {
       type: Date,
-      value: Date.now(),
+      value: Date.now,
     },
   },
 });
 
-module.export = mongoose.model("user", clothingItemSchema);
+module.exports = mongoose.model("clothingItem", clothingItemSchema);
