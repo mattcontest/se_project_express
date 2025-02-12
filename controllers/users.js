@@ -29,4 +29,22 @@ const createUser = (req, res) => {
     });
 };
 
-module.exports = { getUsers, createUser };
+const getUserById = (req, res) => {
+  const { userId } = req.params;
+  console.log("Req.params", userId);
+  User.findById(userId)
+    .then((user) => {
+      if (!user) {
+        return res.status(404).send(`${userId} not found`);
+      }
+      return res.status(200).send(user);
+    })
+    .catch((err) => {
+      if (err.name === "") {
+        // return res.status(400).send({ message: err.message });
+      }
+      return res.status(500).send({ message: err.message });
+    });
+};
+
+module.exports = { getUsers, createUser, getUserById };
