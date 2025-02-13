@@ -64,7 +64,6 @@ const deleteItem = (req, res) => {
       res.status(200).json({ message: `Item ${itemId} deleted succesfully!` });
     })
     // .orFail()
-
     .catch((err) => {
       if (err.name === "AssertionError") {
         return res.status(badRequest).send({ message: err.message });
