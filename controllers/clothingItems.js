@@ -70,7 +70,7 @@ const deleteItem = (req, res) => {
       if (err.name === "AssertionError") {
         return res.status(badRequest).send({ message: err.message });
       }
-      return res.status(serverError).send({ message: err.message });
+      return res.status(badRequest).send({ message: err.message });
     });
 };
 
