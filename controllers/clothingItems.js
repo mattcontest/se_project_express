@@ -98,7 +98,7 @@ const dislikeItem = (req, res) => {
     return res.status(400).send({ message: "Invalid Format!" });
   }
 
-  ClothingItem.findByIdAndUpdate(
+  return ClothingItem.findByIdAndUpdate(
     itemId,
     { $pull: { likes: req.user.owner } },
     { new: true }

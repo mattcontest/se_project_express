@@ -37,7 +37,8 @@ const getUserById = (req, res) => {
     .catch((err) => {
       if (err.name === "DocumentNotFoundError") {
         return res.status(notFound).send({ message: `${userId} not found` });
-      } else if (err.name === "CastError") {
+      }
+      if (err.name === "CastError") {
         return res
           .status(badRequest)
           .send({ message: `Bad Request ${err.message}` });
