@@ -1,3 +1,4 @@
+const { default: mongoose } = require("mongoose");
 const ClothingItem = require("../models/clothingItem");
 const { badRequest, notFound, serverError } = require("../utils/errors");
 
@@ -34,7 +35,8 @@ const createItem = (req, res) => {
 
   //since I cannot destructure it from req.body but I have to grab it from req.user
 
-  const owner = req.user.owner;
+  const { owner } = req.user;
+  console.log("Check owner", owner);
   ClothingItem.create({ name, weather, imageUrl, owner })
     // .orFail()
 
@@ -97,6 +99,11 @@ const likeItem = (req, res) => {
 
 const dislikeItem = (req, res) => {
   const { itemId } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(itemId)) {
+    return res.status(400).send({ message: "Invalid Format!" });
+  }
+
   ClothingItem.findByIdAndUpdate(
     itemId,
     { $pull: { likes: req.user.owner } },
@@ -109,13 +116,11 @@ const dislikeItem = (req, res) => {
           .status(notFound)
           .send({ message: "Requested resource not found" });
       }
-      return updatedItem;
-    })
-    .then((updatedItem) => {
+
       res.status(200).json(updatedItem);
     })
     .catch((err) => {
-      res.status(badRequest).send({ message: err.message });
+      return res.status(badRequest).send({ message: err.message });
     });
 };
 
