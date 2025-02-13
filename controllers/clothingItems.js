@@ -93,4 +93,28 @@ const likeItem = (req, res) => {
     });
 };
 
-module.exports = { getItems, createItem, deleteItem, likeItem };
+const dislikeItem = (req, res) => {
+  const { itemId } = req.params;
+  ClothingItem.findByIdAndUpdate(
+    itemId,
+    { $pull: { likes: req.user.owner } },
+    { new: true }
+  )
+    .populate("owner")
+    .then((updatedItem) => {
+      if (!updatedItem) {
+        return res
+          .status(notFound)
+          .send({ message: "Requested resource not found" });
+      }
+      return updatedItem;
+    })
+    .then((updatedItem) => {
+      res.status(200).json(updatedItem);
+    })
+    .catch((err) => {
+      res.status(badRequest).send({ message: err.message });
+    });
+};
+
+module.exports = { getItems, createItem, deleteItem, likeItem, dislikeItem };
