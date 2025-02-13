@@ -4,8 +4,6 @@ const { badRequest, notFound, serverError } = require("../utils/errors");
 
 const getItems = (req, res) => {
   ClothingItem.find({})
-    //I'm populating here so I can see the user behind each item
-
     .populate("owner")
     .then((items) => {
       res.status(200).json(items);
@@ -40,9 +38,7 @@ const createItem = (req, res) => {
   ClothingItem.create({ name, weather, imageUrl, owner })
     // .orFail()
 
-    .then((item) => {
-      return item.populate("owner");
-    })
+    .then((item) => item.populate("owner"))
     .then((populatedItem) => {
       res.status(201).json(populatedItem);
     })
@@ -63,7 +59,9 @@ const deleteItem = (req, res) => {
           .status(notFound)
           .send({ message: "Requested resource not found" });
       }
-      res.status(200).json({ message: `Item ${itemId} deleted succesfully!` });
+      return res
+        .status(200)
+        .json({ message: `Item ${itemId} deleted succesfully!` });
     })
     // .orFail()
     .catch((err) => {
@@ -88,10 +86,10 @@ const likeItem = (req, res) => {
           .status(notFound)
           .send({ message: "Requested resource not found" });
       }
-      res.status(200).json(updatedItem);
+      return res.status(200).json(updatedItem);
     })
     .catch((err) => {
-      res.status(badRequest).send({ message: err.message });
+      return res.status(badRequest).send({ message: err.message });
     });
 };
 
@@ -117,9 +115,7 @@ const dislikeItem = (req, res) => {
 
       return res.status(200).json(updatedItem);
     })
-    .catch((err) => {
-      return res.status(badRequest).send({ message: err.message });
-    });
+    .catch((err) => res.status(badRequest).send({ message: err.message }));
 };
 
 module.exports = { getItems, createItem, deleteItem, likeItem, dislikeItem };
