@@ -1,10 +1,10 @@
 const ClothingItem = require("../models/clothingItem");
 const { badRequest, notFound, serverError } = require("../utils/errors");
-//GET /items
 
 const getItems = (req, res) => {
   ClothingItem.find({})
     //I'm populating here so I can see the user behind each item
+
     .populate("owner")
     .then((items) => {
       res.status(200).json(items);
@@ -15,28 +15,30 @@ const getItems = (req, res) => {
     });
 };
 
-const getItemById = (req, res) => {
-  const { itemId } = req.params;
-  ClothingItem.findById(itemId)
-    .orFail()
-    .then((item) => res.send(item))
-    .catch((err) => {
-      console.error(err);
-      return res.status(500).send({ message: err.message });
-    });
-};
+// const getItemById = (req, res) => {
+//   const { itemId } = req.params;
+//   ClothingItem.findById(itemId)
+//     .orFail()
+//     .then((item) => res.send(item))
+//     .catch((err) => {
+//       console.error(err);
+//       return res.status(500).send({ message: err.message });
+//     });
+// };
 
 const createItem = (req, res) => {
   const { name, weather, imageUrl } = req.body;
   console.log("Req.body", name, weather, imageUrl);
   console.log("Is that the Id", req.user.owner);
   //Grabbing the owner/_id from the app.js as instructed and adding this way
+
   //since I cannot destructure it from req.body but I have to grab it from req.user
-  let owner = req.user.owner;
+
+  const owner = req.user.owner;
   ClothingItem.create({ name, weather, imageUrl, owner })
     // .orFail()
+
     .then((item) => {
-      // res.send(item);
       return item.populate("owner");
     })
     .then((populatedItem) => {
@@ -62,6 +64,7 @@ const deleteItem = (req, res) => {
       res.status(200).json({ message: `Item ${itemId} deleted succesfully!` });
     })
     // .orFail()
+
     .catch((err) => {
       if (err.name === "AssertionError") {
         return res.status(badRequest).send({ message: err.message });
