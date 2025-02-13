@@ -88,9 +88,7 @@ const likeItem = (req, res) => {
       }
       return res.status(200).json(updatedItem);
     })
-    .catch((err) => {
-      return res.status(badRequest).send({ message: err.message });
-    });
+    .catch((err) => res.status(badRequest).send({ message: err.message }));
 };
 
 const dislikeItem = (req, res) => {
