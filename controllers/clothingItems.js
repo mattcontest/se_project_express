@@ -88,8 +88,6 @@ const likeItem = (req, res) => {
           .status(notFound)
           .send({ message: "Requested resource not found" });
       }
-    })
-    .then((updatedItem) => {
       res.status(200).json(updatedItem);
     })
     .catch((err) => {
@@ -117,7 +115,7 @@ const dislikeItem = (req, res) => {
           .send({ message: "Requested resource not found" });
       }
 
-      res.status(200).json(updatedItem);
+      return res.status(200).json(updatedItem);
     })
     .catch((err) => {
       return res.status(badRequest).send({ message: err.message });
