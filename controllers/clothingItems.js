@@ -29,9 +29,9 @@ const createItem = (req, res) => {
   const { name, weather, imageUrl } = req.body;
   console.log("Req.body", name, weather, imageUrl);
   console.log("Is that the Id", req.user.owner);
-  //Grabbing the owner/_id from the app.js as instructed and adding this way
+  // Grabbing the owner/_id from the app.js as instructed and adding this way
 
-  //since I cannot destructure it from req.body but I have to grab it from req.user
+  // since I cannot destructure it from req.body but I have to grab it from req.user
 
   const { owner } = req.user;
   console.log("Check owner", owner);
