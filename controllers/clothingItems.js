@@ -99,18 +99,25 @@ const likeItem = (req, res) => {
       }
       return res.status(200).json(updatedItem);
     })
-    .catch((err) =>
+    .catch((err) => {
+      if (err.name === "CastError") {
+        return res
+          .status(badRequest)
+          .send({ message: "CastError when attempting to like an item" });
+      }
       res
-        .status(badRequest)
-        .send({ message: "500 Server Error when attemping to like an item" })
-    );
+        .status(serverError)
+        .send({ message: "500 Server Error when attemping to like an item" });
+    });
 };
 
 const dislikeItem = (req, res) => {
   const { itemId } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(itemId)) {
-    return res.status(400).send({ message: "Invalid Format!" });
+    return res
+      .status(badRequest)
+      .send({ message: "Bad Request: Invalid Format!" });
   }
 
   return ClothingItem.findByIdAndUpdate(
@@ -128,11 +135,16 @@ const dislikeItem = (req, res) => {
 
       return res.status(200).json(updatedItem);
     })
-    .catch((err) =>
+    .catch((err) => {
+      if (err.name === "CastError") {
+        return res
+          .status(badRequest)
+          .send({ message: "Bad Request: Cast Error when disliking an item" });
+      }
       res
-        .status(badRequest)
-        .send({ message: "400 Bad Request when deleting an  Item" })
-    );
+        .status(serverError)
+        .send({ message: "500 Server Error when deleting an  Item" });
+    });
 };
 
 module.exports = { getItems, createItem, deleteItem, likeItem, dislikeItem };
