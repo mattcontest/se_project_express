@@ -8,7 +8,9 @@ const getUsers = (req, res) => {
     })
     .catch((err) => {
       console.error(err);
-      return res.status(serverError).send({ message: err.message });
+      return res
+        .status(serverError)
+        .send({ message: "500 Server Error when attempting to getUsers" });
     });
 };
 
@@ -22,9 +24,13 @@ const createUser = (req, res) => {
     })
     .catch((err) => {
       if (err.name === "ValidationError") {
-        return res.status(badRequest).send({ message: err.message });
+        return res
+          .status(badRequest)
+          .send({ message: "400 Bad Request  when creating an user" });
       }
-      return res.status(serverError).send({ message: err.message });
+      return res
+        .status(serverError)
+        .send({ message: "500 Server Error when creating an user" });
     });
 };
 
@@ -41,9 +47,11 @@ const getUserById = (req, res) => {
       if (err.name === "CastError") {
         return res
           .status(badRequest)
-          .send({ message: `Bad Request ${err.message}` });
+          .send({ message: `Bad Request -- Cast Error when getUsersById` });
       }
-      return res.status(serverError).send({ message: err.message });
+      return res
+        .status(serverError)
+        .send({ message: "500 Server Error when attempting to getUserById" });
     });
 };
 

@@ -87,7 +87,7 @@ const likeItem = (req, res) => {
   const { itemId } = req.params;
   ClothingItem.findByIdAndUpdate(
     itemId,
-    { $addToSet: { likes: req.user.owner } },
+    { $addToSet: { likes: req.user._id } },
     { new: true }
   )
     .populate("owner")
@@ -99,7 +99,11 @@ const likeItem = (req, res) => {
       }
       return res.status(200).json(updatedItem);
     })
-    .catch((err) => res.status(badRequest).send({ message: err.message }));
+    .catch((err) =>
+      res
+        .status(badRequest)
+        .send({ message: "500 Server Error when attemping to like an item" })
+    );
 };
 
 const dislikeItem = (req, res) => {
@@ -111,7 +115,7 @@ const dislikeItem = (req, res) => {
 
   return ClothingItem.findByIdAndUpdate(
     itemId,
-    { $pull: { likes: req.user.owner } },
+    { $pull: { likes: req.user._id } },
     { new: true }
   )
     .populate("owner")
@@ -124,7 +128,11 @@ const dislikeItem = (req, res) => {
 
       return res.status(200).json(updatedItem);
     })
-    .catch((err) => res.status(badRequest).send({ message: err.message }));
+    .catch((err) =>
+      res
+        .status(badRequest)
+        .send({ message: "400 Bad Request when deleting an  Item" })
+    );
 };
 
 module.exports = { getItems, createItem, deleteItem, likeItem, dislikeItem };
