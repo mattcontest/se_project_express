@@ -76,4 +76,4 @@ Before committing your code, make sure you edit the file `sprint.txt` in the roo
 
 ## Author
 
-[MattCo] – [Your GitHub](https://github.com/mattcontest)
+[MattCo] – [Check My Portfolio](https://github.com/mattcontest)
