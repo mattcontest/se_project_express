@@ -105,7 +105,7 @@ const likeItem = (req, res) => {
           .status(badRequest)
           .send({ message: "CastError when attempting to like an item" });
       }
-      res
+      return res
         .status(serverError)
         .send({ message: "500 Server Error when attemping to like an item" });
     });
@@ -141,7 +141,7 @@ const dislikeItem = (req, res) => {
           .status(badRequest)
           .send({ message: "Bad Request: Cast Error when disliking an item" });
       }
-      res
+      return res
         .status(serverError)
         .send({ message: "500 Server Error when deleting an  Item" });
     });
