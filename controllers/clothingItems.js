@@ -10,7 +10,9 @@ const getItems = (req, res) => {
     })
     .catch((err) => {
       console.error(err);
-      return res.status(serverError).send({ message: err.message });
+      return res
+        .status(serverError)
+        .send({ message: "An error has occurred while retrieving Items" });
     });
 };
 
@@ -33,7 +35,8 @@ const createItem = (req, res) => {
 
   // since I cannot destructure it from req.body but I have to grab it from req.user
 
-  const { owner } = req.user;
+  // const { owner } = req.user;
+  const owner = req.user._id;
   console.log("Check owner", owner);
   ClothingItem.create({ name, weather, imageUrl, owner })
     // .orFail()
@@ -44,9 +47,13 @@ const createItem = (req, res) => {
     })
     .catch((err) => {
       if (err.name === "ValidationError") {
-        return res.status(badRequest).send({ message: err.message });
+        return res
+          .status(badRequest)
+          .send({ message: "400 Bad Request when creating Item" });
       }
-      return res.status(serverError).send({ message: err.message });
+      return res
+        .status(serverError)
+        .send({ message: "500 Server Error when creating Item" });
     });
 };
 
@@ -65,10 +72,14 @@ const deleteItem = (req, res) => {
     })
     // .orFail()
     .catch((err) => {
-      if (err.name === "AssertionError") {
-        return res.status(badRequest).send({ message: err.message });
+      if (err.name === "CastError") {
+        return res
+          .status(badRequest)
+          .send({ message: "400 Bad Request when deleting an  Item" });
       }
-      return res.status(badRequest).send({ message: err.message });
+      return res
+        .status(serverError)
+        .send({ message: "500 Server Error when deleting an  Item" });
     });
 };
 

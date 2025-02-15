@@ -18,7 +18,7 @@ app.use(express.json());
 
 app.use((req, res, next) => {
   req.user = {
-    owner: "67abedfe036974cae6f15072",
+    _id: "67abedfe036974cae6f15072",
   };
   console.log("Adding this to res", req.user);
   next();
