@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/mattcontest/se_project_express#readme",
   "dependencies": {
+    "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
     "express": "^4.21.2",
     "mongoose": "^8.10.0",
