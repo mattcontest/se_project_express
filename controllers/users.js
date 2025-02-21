@@ -1,5 +1,7 @@
+const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 const bcrypt = require("bcrypt");
+const { JWT_SECRET } = require("../utils/config");
 const { badRequest, notFound, serverError } = require("../utils/errors");
 
 const getUsers = (req, res) => {
@@ -22,7 +24,12 @@ const createUser = (req, res) => {
     .hash(password, 10)
     .then((hash) => User.create({ name, avatar, email, password: hash }))
     .then((user) => {
-      res.status(201).send(user);
+      res.status(201).send({
+        name: user.name,
+        email: user.email,
+        avatar: user.avatar,
+        _id: user._id,
+      });
     })
     .catch((err) => {
       if (err.code === 11000) {
@@ -37,21 +44,20 @@ const createUser = (req, res) => {
         .status(serverError)
         .send({ message: "500 Server Error when creating a user" });
     });
+};
 
-  // User.create({ name, avatar })
-  //   .then((user) => {
-  //     res.status(201).send(user);
-  //   })
-  //   .catch((err) => {
-  //     if (err.name === "ValidationError") {
-  //       return res
-  //         .status(badRequest)
-  //         .send({ message: "400 Bad Request  when creating an user" });
-  //     }
-  //     return res
-  //       .status(serverError)
-  //       .send({ message: "500 Server Error when creating an user" });
-  //   });
+const login = (req, res) => {
+  const { email, password } = req.body;
+  return User.findUserByCredentials(email, password)
+    .then((user) => {
+      const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
+        expiresIn: "7d",
+      });
+      return res.status(200).send({ token });
+    })
+    .catch((err) => {
+      res.status(401).send({ message: "Authentication Failed" });
+    });
 };
 
 const getUserById = (req, res) => {
