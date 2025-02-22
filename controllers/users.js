@@ -60,8 +60,9 @@ const login = (req, res) => {
     });
 };
 
-const getUserById = (req, res) => {
-  const { userId } = req.params;
+const getCurrentUser = (req, res) => {
+  const { _id: userId } = req.user;
+  console.log(req.user);
   console.log("Req.params", userId);
   User.findById(userId)
     .orFail()
@@ -81,4 +82,4 @@ const getUserById = (req, res) => {
     });
 };
 
-module.exports = { getUsers, createUser, getUserById, login };
+module.exports = { getUsers, createUser, getCurrentUser, login };

@@ -2,11 +2,27 @@ const express = require("express");
 // const cors = require("cors");
 const mongoose = require("mongoose");
 const indexRouter = require("./routes/index");
+const cors = require("cors");
 
 const app = express();
 const { PORT = 3001 } = process.env;
 
-// app.use(cors({ origin: "*" }));
+// app.use((req, res, next) => {
+//   res.setHeader(
+//     "Content-Security-Policy",
+//     "default-src 'self'; connect-src 'self' http://localhost:3001"
+//   );
+//   next();
+// });
+
+// app.use(
+//   cors({
+//     origin: "*",
+//     methods: "GET, POST, PUT, DELETE",
+//     allowedHeaders: "Content-Type, Authorization",
+//   })
+// );
+
 mongoose
   .connect("mongodb://127.0.0.1:27017/wtwr_db")
   .then(() => {
