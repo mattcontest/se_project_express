@@ -56,7 +56,7 @@ const login = (req, res) => {
       return res.status(200).send({ token });
     })
     .catch((err) => {
-      res.status(401).send({ message: "Authentication Failed" });
+      res.status(400).send({ message: "Authentication Failed" });
     });
 };
 

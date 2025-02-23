@@ -29,8 +29,8 @@ const getItems = (req, res) => {
 
 const createItem = (req, res) => {
   const { name, weather, imageUrl } = req.body;
-  console.log("Req.body", name, weather, imageUrl);
-  console.log("Is that the Id", req.user.owner);
+  // console.log("Req.body", name, weather, imageUrl);
+  // console.log("Is that the Id", req.user.owner);
   // Grabbing the owner/_id from the app.js as instructed and adding this way
 
   // since I cannot destructure it from req.body but I have to grab it from req.user
@@ -41,7 +41,11 @@ const createItem = (req, res) => {
   ClothingItem.create({ name, weather, imageUrl, owner })
     // .orFail()
 
-    .then((item) => item.populate("owner"))
+    .then((item) => {
+      item.populate("owner");
+      res.send({ data: item });
+      // res.json(item);
+    })
     .then((populatedItem) => {
       res.status(201).json(populatedItem);
     })
