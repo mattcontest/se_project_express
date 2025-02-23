@@ -23,6 +23,7 @@ const { PORT = 3001 } = process.env;
 //   })
 // );
 
+app.use(cors());
 mongoose
   .connect("mongodb://127.0.0.1:27017/wtwr_db")
   .then(() => {
@@ -34,7 +35,7 @@ app.use(express.json());
 
 // app.use((req, res, next) => {
 //   req.user = {
-//     _id: "67abedfe036974cae6f15072",
+//     _id: "67b9c6d638e9e5fd25dd1ffa",
 //   };
 //   console.log("Adding this to res", req.user);
 //   next();

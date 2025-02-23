@@ -59,28 +59,61 @@ const createItem = (req, res) => {
 
 const deleteItem = (req, res) => {
   const { itemId } = req.params;
-  ClothingItem.findByIdAndDelete({ _id: itemId })
-    .then((deletedItem) => {
-      if (!deletedItem) {
-        return res
-          .status(notFound)
-          .send({ message: "Requested resource not found" });
-      }
-      return res
-        .status(200)
-        .json({ message: `Item ${itemId} deleted succesfully!` });
+  const loggedUser = req.user._id;
+
+  ClothingItem.findById(itemId)
+    .orFail(() => {
+      throw new NotFoundError("Item not found");
     })
-    // .orFail()
+    .then((item) => {
+      //now checking if the item owner corresponds to the loggedUser who's making the request
+      console.log("Check item owner", item.owner);
+      console.log("Check logged user", loggedUser);
+
+      if (item.owner !== loggedUser) {
+        throw new ForbiddenError(
+          "You do not have the permission to delete this item"
+        );
+      }
+
+      return ClothingItem.findByIdAndDelete(itemId).then(() =>
+        res.send({ message: "Item deleted!" })
+      );
+    })
     .catch((err) => {
       if (err.name === "CastError") {
         return res
           .status(badRequest)
-          .send({ message: "400 Bad Request when deleting an  Item" });
+          .send({ message: "400 Bad Request when deleting an item" });
       }
+
       return res
         .status(serverError)
-        .send({ message: "500 Server Error when deleting an  Item" });
+        .send({ message: "500 Server Error when deleting an Item" });
     });
+
+  // ClothingItem.findByIdAndDelete({ _id: itemId })
+  //   .then((deletedItem) => {
+  //     if (!deletedItem) {
+  //       return res
+  //         .status(notFound)
+  //         .send({ message: "Requested resource not found" });
+  //     }
+  //     return res
+  //       .status(200)
+  //       .json({ message: `Item ${itemId} deleted succesfully!` });
+  //   })
+  //   // .orFail()
+  //   .catch((err) => {
+  //     if (err.name === "CastError") {
+  //       return res
+  //         .status(badRequest)
+  //         .send({ message: "400 Bad Request when deleting an  Item" });
+  //     }
+  //     return res
+  //       .status(serverError)
+  //       .send({ message: "500 Server Error when deleting an  Item" });
+  //   });
 };
 
 const likeItem = (req, res) => {
