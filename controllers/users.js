@@ -82,4 +82,35 @@ const getCurrentUser = (req, res) => {
     });
 };
 
-module.exports = { getUsers, createUser, getCurrentUser, login };
+const updateUser = (req, res) => {
+  const { _id } = req.user;
+  const { name, avatar } = req.body;
+  User.findByIdAndUpdate(
+    _id,
+    { name, avatar },
+    { new: true, runValidators: true }
+  )
+    .orFail(() => {
+      throw new NotFoundError("User not found");
+    })
+    .then((user) => {
+      res.status(200).send({
+        _id: user._id,
+        name: user.name,
+        avatar: user.avatar,
+        email: user.email,
+      });
+    })
+    .catch((err) => {
+      if (err.name === "Not Found") {
+        return res.status(notFound).send({ message: "Not found" });
+      }
+      if (err.name === "ValidationError") {
+        return res
+          .status(badRequest)
+          .send({ message: "400 Bad Request when updating user" });
+      }
+    });
+};
+
+module.exports = { getUsers, createUser, getCurrentUser, login, updateUser };
