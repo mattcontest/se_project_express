@@ -75,9 +75,10 @@ const deleteItem = (req, res) => {
       console.log("Check logged user", loggedUser);
 
       if (String(item.owner) !== loggedUser) {
-        throw new ForbiddenError(
-          "You do not have the permission to delete this item"
-        );
+        // throw new AssertionError(
+        //   "You do not have the permission to delete this item"
+        // );
+        return res.status(403).send({ message: "Assertion Error" });
       }
 
       return ClothingItem.findByIdAndDelete(itemId).then(() =>
@@ -90,6 +91,10 @@ const deleteItem = (req, res) => {
           .status(badRequest)
           .send({ message: "400 Bad Request when deleting an item" });
       }
+
+      // if (err.name === "AssertionError") {
+      //   return res.status(403).send({ message: "Assertion Error" });
+      // }
 
       return res
         .status(notFound)
