@@ -92,8 +92,8 @@ const deleteItem = (req, res) => {
       }
 
       return res
-        .status(serverError)
-        .send({ message: "500 Server Error when deleting an Item" });
+        .status(notFound)
+        .send({ message: "404 user id Not found - Cannot delete Item" });
     });
 
   // ClothingItem.findByIdAndDelete({ _id: itemId })
