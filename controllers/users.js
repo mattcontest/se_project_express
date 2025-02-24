@@ -1,6 +1,6 @@
+const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
-const bcrypt = require("bcrypt");
 const { JWT_SECRET } = require("../utils/config");
 const { badRequest, notFound, serverError } = require("../utils/errors");
 
@@ -34,7 +34,8 @@ const createUser = (req, res) => {
     .catch((err) => {
       if (err.code === 11000) {
         return res.status(409).send({ message: "Email already used" });
-      } else if (err.name === "ValidationError") {
+      }
+      if (err.name === "ValidationError") {
         return res
           .status(badRequest)
           .send({ message: "400 Bad Request when creating a user" });
@@ -55,7 +56,7 @@ const login = (req, res) => {
       });
       return res.status(200).send({ token });
     })
-    .catch((err) => {
+    .catch(() => {
       res.status(400).send({ message: "Authentication Failed" });
     });
 };
@@ -90,9 +91,7 @@ const updateUser = (req, res) => {
     { name, avatar },
     { new: true, runValidators: true }
   )
-    .orFail(() => {
-      throw new NotFoundError("User not found");
-    })
+    .orFail(() => res.status(notFound).send({ message: `id not found` }))
     .then((user) => {
       res.status(200).send({
         _id: user._id,
@@ -110,6 +109,7 @@ const updateUser = (req, res) => {
           .status(badRequest)
           .send({ message: "400 Bad Request when updating user" });
       }
+      return res.status(serverError).send({ message: "Server Error" });
     });
 };
 

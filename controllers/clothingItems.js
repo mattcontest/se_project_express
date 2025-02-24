@@ -1,5 +1,6 @@
 const { default: mongoose } = require("mongoose");
 const ClothingItem = require("../models/clothingItem");
+const NotFoundError = require("../customErrors/notFoundError");
 const { badRequest, notFound, serverError } = require("../utils/errors");
 
 const getItems = (req, res) => {
@@ -68,9 +69,13 @@ const deleteItem = (req, res) => {
   ClothingItem.findById(itemId)
     .orFail(() => {
       throw new NotFoundError("Item not found");
+      // res
+      //   .status(notFound)
+      //   .send({ message: "Item id not found ~ Cannot delete" });
     })
     .then((item) => {
-      //now checking if the item owner corresponds to the loggedUser who's making the request
+      // now checking if the item owner corresponds to the loggedUser who's making the request
+
       console.log("Check item owner", String(item.owner));
       console.log("Check logged user", loggedUser);
 
@@ -95,6 +100,11 @@ const deleteItem = (req, res) => {
       // if (err.name === "AssertionError") {
       //   return res.status(403).send({ message: "Assertion Error" });
       // }
+      if (err.name === "notFound") {
+        res
+          .status(notFound)
+          .send({ message: "Item id not found ~ Cannot delete" });
+      }
 
       return res
         .status(notFound)
@@ -132,6 +142,12 @@ const likeItem = (req, res) => {
     { $addToSet: { likes: req.user._id } },
     { new: true }
   )
+    .orFail(() => {
+      // return res
+      //   .status(notFound)
+      //   .send({ message: "Not existing id in the db" });
+      throw new NotFoundError("Item id not found");
+    })
     .populate("owner")
     .then((updatedItem) => {
       if (!updatedItem) {
@@ -142,6 +158,22 @@ const likeItem = (req, res) => {
       return res.status(200).json(updatedItem);
     })
     .catch((err) => {
+      console.log("Check error", err);
+      if (
+        err.name === "DocumentNotFoundError" ||
+        err.message.includes("not found")
+      ) {
+        return res
+          .status(notFound)
+          .send({ message: "Not existing id in the db" });
+      }
+
+      if (err.name === "AssertionError") {
+        return res
+          .status(notFound)
+          .send({ message: "Not existing id in the db" });
+      }
+
       if (err.name === "CastError") {
         return res
           .status(badRequest)
