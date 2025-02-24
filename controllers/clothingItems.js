@@ -71,17 +71,17 @@ const deleteItem = (req, res) => {
     })
     .then((item) => {
       //now checking if the item owner corresponds to the loggedUser who's making the request
-      console.log("Check item owner", item.owner);
+      console.log("Check item owner", String(item.owner));
       console.log("Check logged user", loggedUser);
 
-      if (item.owner !== loggedUser) {
+      if (String(item.owner) !== loggedUser) {
         throw new ForbiddenError(
           "You do not have the permission to delete this item"
         );
       }
 
       return ClothingItem.findByIdAndDelete(itemId).then(() =>
-        res.send({ message: "Item deleted!" })
+        res.status(200).send({ message: "Item deleted!" })
       );
     })
     .catch((err) => {
