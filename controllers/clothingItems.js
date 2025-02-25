@@ -1,6 +1,8 @@
 const { default: mongoose } = require("mongoose");
 const ClothingItem = require("../models/clothingItem");
 const NotFoundError = require("../customErrors/notFoundError");
+const BadRequestError = require("../customErrors/badRequestError");
+const AssertionError = require("../customErrors/assertionError");
 const {
   badRequest,
   notFound,
@@ -71,6 +73,12 @@ const deleteItem = (req, res) => {
   const { itemId } = req.params;
   const loggedUser = req.user._id;
 
+  if (!mongoose.Types.ObjectId.isValid(itemId)) {
+    return res
+      .status(400)
+      .send({ message: "Invalid Item Id ~ Cannot proceed with deletion" });
+  }
+
   ClothingItem.findById(itemId)
     .orFail(() => {
       throw new NotFoundError("Item not found");
@@ -85,7 +93,7 @@ const deleteItem = (req, res) => {
       console.log("Check logged user", loggedUser);
 
       if (String(item.owner) !== loggedUser) {
-        // throw new AssertionError(
+        // return new AssertionError(
         //   "You do not have the permission to delete this item"
         // );
         return res.status(assertionError).send({ message: "Assertion Error" });
@@ -101,19 +109,25 @@ const deleteItem = (req, res) => {
           .status(badRequest)
           .send({ message: "400 Bad Request when deleting an item" });
       }
+      if (err.name === "AssertionError") {
+        return res
+          .status(403)
+          .json({ message: "400 Bad Request Eror ~ Incorrect ID format" });
+      }
 
-      // if (err.name === "AssertionError") {
-      //   return res.status(403).send({ message: "Assertion Error" });
-      // }
-      if (err.name === "notFound") {
-        res
+      if (err.name === "BadRequestError") {
+        return res.status(badRequest).send({
+          message: "400 Bad Request ~ Invalid ID cannot proceed with deletion",
+        });
+      }
+
+      if (err.statusCode === 404) {
+        return res
           .status(notFound)
           .send({ message: "Item id not found ~ Cannot delete" });
       }
 
-      return res
-        .status(notFound)
-        .send({ message: "404 user id Not found - Cannot delete Item" });
+      return res.status(serverError).send({ message: "500 Server Error" });
     });
 
   // ClothingItem.findByIdAndDelete({ _id: itemId })
@@ -155,11 +169,6 @@ const likeItem = (req, res) => {
     })
     .populate("owner")
     .then((updatedItem) => {
-      if (!updatedItem) {
-        return res
-          .status(notFound)
-          .send({ message: "Requested resource not found" });
-      }
       return res.status(200).json(updatedItem);
     })
     .catch((err) => {
