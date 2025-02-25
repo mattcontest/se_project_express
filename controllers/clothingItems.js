@@ -1,7 +1,12 @@
 const { default: mongoose } = require("mongoose");
 const ClothingItem = require("../models/clothingItem");
 const NotFoundError = require("../customErrors/notFoundError");
-const { badRequest, notFound, serverError } = require("../utils/errors");
+const {
+  badRequest,
+  notFound,
+  serverError,
+  assertionError,
+} = require("../utils/errors");
 
 const getItems = (req, res) => {
   ClothingItem.find({})
@@ -83,7 +88,7 @@ const deleteItem = (req, res) => {
         // throw new AssertionError(
         //   "You do not have the permission to delete this item"
         // );
-        return res.status(403).send({ message: "Assertion Error" });
+        return res.status(assertionError).send({ message: "Assertion Error" });
       }
 
       return ClothingItem.findByIdAndDelete(itemId).then(() =>
