@@ -173,10 +173,8 @@ const likeItem = (req, res) => {
     })
     .catch((err) => {
       console.log("Check error", err);
-      if (
-        err.name === "DocumentNotFoundError" ||
-        err.message.includes("not found")
-      ) {
+
+      if (err.statusCode === 404) {
         return res
           .status(notFound)
           .send({ message: "Not existing id in the db" });
