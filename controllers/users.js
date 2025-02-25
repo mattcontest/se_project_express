@@ -7,6 +7,7 @@ const {
   notFound,
   serverError,
   conflictError,
+  unauthorizedError,
 } = require("../utils/errors");
 
 // const getUsers = (req, res) => {
@@ -56,6 +57,11 @@ const createUser = (req, res) => {
 
 const login = (req, res) => {
   const { email, password } = req.body;
+  if (!email || !password) {
+    return res
+      .status(badRequest)
+      .send({ message: "Both email and password fields are required!" });
+  }
   return User.findUserByCredentials(email, password)
     .then((user) => {
       const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
@@ -63,8 +69,14 @@ const login = (req, res) => {
       });
       return res.status(200).send({ token });
     })
-    .catch(() => {
-      res.status(400).send({ message: "Authentication Failed" });
+    .catch((err) => {
+      if (err.message.includes("Incorrect email or password")) {
+        return res
+          .status(unauthorizedError)
+          .send({ message: "Incorrect email or password ~ 401" });
+      }
+
+      res.status(serverError).send({ message: "Authentication Failed" });
     });
 };
 
