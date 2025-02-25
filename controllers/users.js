@@ -76,7 +76,7 @@ const login = (req, res) => {
           .send({ message: "Incorrect email or password ~ 401" });
       }
 
-      res.status(serverError).send({ message: "Authentication Failed" });
+      return res.status(serverError).send({ message: "Authentication Failed" });
     });
 };
 

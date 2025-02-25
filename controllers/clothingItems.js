@@ -1,8 +1,6 @@
 const { default: mongoose } = require("mongoose");
 const ClothingItem = require("../models/clothingItem");
 const NotFoundError = require("../customErrors/notFoundError");
-const BadRequestError = require("../customErrors/badRequestError");
-const AssertionError = require("../customErrors/assertionError");
 const {
   badRequest,
   notFound,
@@ -79,7 +77,7 @@ const deleteItem = (req, res) => {
       .send({ message: "Invalid Item Id ~ Cannot proceed with deletion" });
   }
 
-  ClothingItem.findById(itemId)
+  return ClothingItem.findById(itemId)
     .orFail(() => {
       throw new NotFoundError("Item not found");
       // res
@@ -168,9 +166,7 @@ const likeItem = (req, res) => {
       throw new NotFoundError("Item id not found");
     })
     .populate("owner")
-    .then((updatedItem) => {
-      return res.status(200).json(updatedItem);
-    })
+    .then((updatedItem) => res.status(200).json(updatedItem))
     .catch((err) => {
       console.log("Check error", err);
 
