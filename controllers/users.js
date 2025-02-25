@@ -2,20 +2,25 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 const { JWT_SECRET } = require("../utils/config");
-const { badRequest, notFound, serverError } = require("../utils/errors");
+const {
+  badRequest,
+  notFound,
+  serverError,
+  conflictError,
+} = require("../utils/errors");
 
-const getUsers = (req, res) => {
-  User.find({})
-    .then((users) => {
-      res.send(users);
-    })
-    .catch((err) => {
-      console.error(err);
-      return res
-        .status(serverError)
-        .send({ message: "500 Server Error when attempting to getUsers" });
-    });
-};
+// const getUsers = (req, res) => {
+//   User.find({})
+//     .then((users) => {
+//       res.send(users);
+//     })
+//     .catch((err) => {
+//       console.error(err);
+//       return res
+//         .status(serverError)
+//         .send({ message: "500 Server Error when attempting to getUsers" });
+//     });
+// };
 
 const createUser = (req, res) => {
   const { name, avatar, email, password } = req.body;
@@ -33,7 +38,9 @@ const createUser = (req, res) => {
     })
     .catch((err) => {
       if (err.code === 11000) {
-        return res.status(409).send({ message: "Email already used" });
+        return res
+          .status(conflictError)
+          .send({ message: "Email already used" });
       }
       if (err.name === "ValidationError") {
         return res
@@ -113,4 +120,4 @@ const updateUser = (req, res) => {
     });
 };
 
-module.exports = { getUsers, createUser, getCurrentUser, login, updateUser };
+module.exports = { createUser, getCurrentUser, login, updateUser };
