@@ -180,12 +180,6 @@ const likeItem = (req, res) => {
           .send({ message: "Not existing id in the db" });
       }
 
-      if (err.name === "AssertionError") {
-        return res
-          .status(notFound)
-          .send({ message: "Not existing id in the db" });
-      }
-
       if (err.name === "CastError") {
         return res
           .status(badRequest)
