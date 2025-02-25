@@ -73,7 +73,7 @@ const deleteItem = (req, res) => {
 
   if (!mongoose.Types.ObjectId.isValid(itemId)) {
     return res
-      .status(400)
+      .status(badRequest)
       .send({ message: "Invalid Item Id ~ Cannot proceed with deletion" });
   }
 
@@ -106,11 +106,6 @@ const deleteItem = (req, res) => {
         return res
           .status(badRequest)
           .send({ message: "400 Bad Request when deleting an item" });
-      }
-      if (err.name === "AssertionError") {
-        return res
-          .status(403)
-          .json({ message: "400 Bad Request Eror ~ Incorrect ID format" });
       }
 
       if (err.name === "BadRequestError") {
