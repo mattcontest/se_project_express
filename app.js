@@ -2,7 +2,7 @@ const cors = require("cors");
 const express = require("express");
 const mongoose = require("mongoose");
 const indexRouter = require("./routes/index");
-
+const errorHandler = require("./middlewares/error-handler");
 const app = express();
 
 const { PORT = 3001 } = process.env;
@@ -31,3 +31,5 @@ app.use("/", indexRouter);
 app.listen(PORT, () => {
   console.log(`Congrats it's up and running! Port ${PORT} `);
 });
+
+app.use(errorHandler);
