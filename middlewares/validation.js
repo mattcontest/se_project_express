@@ -3,8 +3,8 @@ const validator = require("validator");
 
 const validateClothingItem = celebrate({
   body: Joi.object().keys({
-    title: Joi.string().required().min(2).max(30),
-    imageUrl: Joi.string().required().url(),
+    title: Joi.string().min(2).max(30).required(),
+    imageUrl: Joi.string().url().required(),
   }),
 });
 
@@ -26,7 +26,7 @@ const validateLogin = celebrate({
 
 const validateItemId = celebrate({
   params: Joi.object().keys({
-    itemId: Joi.string().hex().length(24).messages({
+    itemId: Joi.string().hex().length(24).required().messages({
       "string.length": "Invalid item ID lenght",
       "string.hex": "Invalid item ID format",
       "any.required": "Item ID is required",
