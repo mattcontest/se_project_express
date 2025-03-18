@@ -16,3 +16,24 @@ const validateUserBody = celebrate({
     password: Joi.string().required(),
   }),
 });
+
+const validateLogin = celebrate({
+  body: Joi.object().keys({
+    email: Joi.string().required().email(),
+    password: Joi.string().required(),
+  }),
+});
+
+const validateUserandClothingId = celebrate({
+  params: Joi.object().keys({
+    userId: Joi.string().alphanum().length(24),
+    itemId: Joi.string().alphanum().length(24),
+  }),
+});
+
+module.exports = {
+  validateClothingItem,
+  validateUserBody,
+  validateLogin,
+  validateUserandClothingId,
+};
