@@ -1,3 +1,4 @@
+require("dotenv").config();
 const cors = require("cors");
 const express = require("express");
 const mongoose = require("mongoose");
@@ -29,6 +30,7 @@ app.use(express.json());
 // });
 app.use(requestLogger);
 app.use("/", indexRouter);
+// console.log("Process.env", process.env);
 // Enabling the error logger
 app.use(errorLogger);
 // Celebrate Error Handler
