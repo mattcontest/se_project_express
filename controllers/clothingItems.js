@@ -136,7 +136,7 @@ const deleteItem = (req, res, next) => {
         // return res
         //   .status(notFound)
         //   .send({ message: "Item id not found ~ Cannot delete" });
-        next(NotFoundError("Item id not found ~ Cannot delete"));
+        next(new NotFoundError("Item id not found ~ Cannot delete"));
       }
 
       // return res.status(serverError).send({ message: "500 Server Error" });
@@ -189,7 +189,7 @@ const likeItem = (req, res, next) => {
         // return res
         //   .status(notFound)
         //   .send({ message: "Not existing id in the db" });
-        next(NotFoundError("Not exisisting ID in the Database"));
+        next(new NotFoundError("Not exisisting ID in the Database"));
       }
 
       if (err.name === "CastError") {
@@ -220,17 +220,22 @@ const dislikeItem = (req, res, next) => {
     { new: true }
   )
     .populate("owner")
+    .orFail()
     .then((updatedItem) => {
-      if (!updatedItem) {
-        // return res
-        // .status(notFound)
-        // .send({ message: "Requested resource not found" });
-        next(new NotFoundError("Requested resource not found"));
-      }
+      // if (!updatedItem) {
+      // return res
+      // .status(notFound)
+      // .send({ message: "Requested resource not found" });
+      // next(new NotFoundError("Requested resource not found"));
+      // }
 
       return res.status(200).json(updatedItem);
     })
     .catch((err) => {
+      if (err.name === "DocumentNotFoundError") {
+        next(new NotFoundError("Requested resource not found!"));
+      }
+
       if (err.name === "CastError") {
         // return res
         // .status(badRequest)
