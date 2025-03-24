@@ -56,20 +56,22 @@ const createItem = (req, res, next) => {
     .then((populatedItem) => {
       res.status(201).json(populatedItem);
     })
-    .catch(next);
-  // .catch((err) => {
-  //   if (err.name === "ValidationError") {
-  //     return res
-  //       .status(badRequest)
-  //       .send({ message: "400 Bad Request when creating Item" });
-  //   }
-  //   return res
-  //     .status(serverError)
-  //     .send({ message: "500 Server Error when creating Item" });
-  // });
+    // .catch(next);
+    .catch((err) => {
+      if (err.name === "ValidationError") {
+        // return res
+        //   .status(badRequest)
+        //   .send({ message: "400 Bad Request when creating Item" });
+        next(new badRequest("400 Bad Request when creating Item"));
+      }
+      // return res
+      //   .status(serverError)
+      //   .send({ message: "500 Server Error when creating Item" });
+      next(err);
+    });
 };
 
-const deleteItem = (req, res) => {
+const deleteItem = (req, res, next) => {
   const { itemId } = req.params;
   const loggedUser = req.user._id;
 
@@ -96,7 +98,10 @@ const deleteItem = (req, res) => {
         // return new AssertionError(
         //   "You do not have the permission to delete this item"
         // );
-        return res.status(assertionError).send({ message: "Assertion Error" });
+        // return res.status(assertionError).send({ message: "Assertion Error" });
+        throw new assertionError(
+          "You don't have the permission to delete this item"
+        );
       }
 
       return ClothingItem.findByIdAndDelete(itemId).then(() =>
@@ -105,24 +110,34 @@ const deleteItem = (req, res) => {
     })
     .catch((err) => {
       if (err.name === "CastError") {
-        return res
-          .status(badRequest)
-          .send({ message: "400 Bad Request when deleting an item" });
+        next(
+          new badRequest("Invalid Data: 400 Bad Request when deleting an item")
+        );
+        // return res
+        //   .status(badRequest)
+        //   .send({ message: "400 Bad Request when deleting an item" });
       }
 
       if (err.name === "BadRequestError") {
-        return res.status(badRequest).send({
-          message: "400 Bad Request ~ Invalid ID cannot proceed with deletion",
-        });
+        // return res.status(badRequest).send({
+        //   message: "400 Bad Request ~ Invalid ID cannot proceed with deletion",
+        // });
+        next(
+          new badRequest(
+            "400 Bad Request ~ Invalid ID cannot proceed with deletion"
+          )
+        );
       }
 
       if (err.statusCode === 404) {
-        return res
-          .status(notFound)
-          .send({ message: "Item id not found ~ Cannot delete" });
+        // return res
+        //   .status(notFound)
+        //   .send({ message: "Item id not found ~ Cannot delete" });
+        next(notFound("Item id not found ~ Cannot delete"));
       }
 
-      return res.status(serverError).send({ message: "500 Server Error" });
+      // return res.status(serverError).send({ message: "500 Server Error" });
+      next(err);
     });
 
   // ClothingItem.findByIdAndDelete({ _id: itemId })
@@ -149,7 +164,7 @@ const deleteItem = (req, res) => {
   //   });
 };
 
-const likeItem = (req, res) => {
+const likeItem = (req, res, next) => {
   const { itemId } = req.params;
   ClothingItem.findByIdAndUpdate(
     itemId,
@@ -168,23 +183,26 @@ const likeItem = (req, res) => {
       console.log("Check error", err);
 
       if (err.statusCode === 404) {
-        return res
-          .status(notFound)
-          .send({ message: "Not existing id in the db" });
+        // return res
+        //   .status(notFound)
+        //   .send({ message: "Not existing id in the db" });
+        next(notFound("Not exisisting ID in the Database"));
       }
 
       if (err.name === "CastError") {
-        return res
-          .status(badRequest)
-          .send({ message: "CastError when attempting to like an item" });
+        // return res
+        // .status(badRequest)
+        // .send({ message: "CastError when attempting to like an item" });
+        next(new badRequest("CastErrpr when ateemptong to like an item"));
       }
-      return res
-        .status(serverError)
-        .send({ message: "500 Server Error when attemping to like an item" });
+      //   return res
+      //     .status(serverError)
+      //     .send({ message: "500 Server Error when attemping to like an item" });
+      next(err);
     });
 };
 
-const dislikeItem = (req, res) => {
+const dislikeItem = (req, res, next) => {
   const { itemId } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(itemId)) {
