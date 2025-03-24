@@ -8,18 +8,19 @@ const {
   assertionError,
 } = require("../utils/errors");
 
-const getItems = (req, res) => {
+const getItems = (req, res, next) => {
   ClothingItem.find({})
     .populate("owner")
     .then((items) => {
       res.status(200).json(items);
     })
-    .catch((err) => {
-      console.error(err);
-      return res
-        .status(serverError)
-        .send({ message: "An error has occurred while retrieving Items" });
-    });
+    .catch(next);
+  // .catch((err) => {
+  //   console.error(err);
+  //   return res
+  //     .status(serverError)
+  //     .send({ message: "An error has occurred while retrieving Items" });
+  // });
 };
 
 // const getItemById = (req, res) => {
@@ -33,7 +34,7 @@ const getItems = (req, res) => {
 //     });
 // };
 
-const createItem = (req, res) => {
+const createItem = (req, res, next) => {
   const { name, weather, imageUrl } = req.body;
   // console.log("Req.body", name, weather, imageUrl);
   // console.log("Is that the Id", req.user.owner);
@@ -55,16 +56,17 @@ const createItem = (req, res) => {
     .then((populatedItem) => {
       res.status(201).json(populatedItem);
     })
-    .catch((err) => {
-      if (err.name === "ValidationError") {
-        return res
-          .status(badRequest)
-          .send({ message: "400 Bad Request when creating Item" });
-      }
-      return res
-        .status(serverError)
-        .send({ message: "500 Server Error when creating Item" });
-    });
+    .catch(next);
+  // .catch((err) => {
+  //   if (err.name === "ValidationError") {
+  //     return res
+  //       .status(badRequest)
+  //       .send({ message: "400 Bad Request when creating Item" });
+  //   }
+  //   return res
+  //     .status(serverError)
+  //     .send({ message: "500 Server Error when creating Item" });
+  // });
 };
 
 const deleteItem = (req, res) => {
