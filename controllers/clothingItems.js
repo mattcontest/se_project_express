@@ -8,8 +8,8 @@ const ClothingItem = require("../models/clothingItem");
 // assertionError,
 // } = require("../utils/errors");
 const BadRequest = require("../errors/bad-request-err");
-const NotFoundError = require("../errors/not-found-error");
-const AssertionError = require("../customErrors/assertionError");
+const NotFoundError = require("../errors/notFoundError");
+const AssertionError = require("../errors/assertionError");
 
 const getItems = (req, res, next) => {
   ClothingItem.find({})

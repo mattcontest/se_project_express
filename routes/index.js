@@ -8,7 +8,7 @@ const {
   validateLogin,
   validateUserBody,
 } = require("../middlewares/validation");
-const NotFoundError = require("../errors/not-found-error");
+const NotFoundError = require("../errors/notFoundError");
 
 router.get("/crash-test", () => {
   setTimeout(() => {

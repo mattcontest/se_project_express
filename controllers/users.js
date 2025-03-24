@@ -11,7 +11,7 @@ const {
 } = require("../utils/errors");
 const ConflictError = require("../errors/conflitct-error");
 const UnauthorizedError = require("../errors/unauthorized-error");
-const NotFoundError = require("../errors/not-found-error");
+const NotFoundError = require("../errors/notFoundError");
 const BadRequestError = require("../errors/bad-request-err");
 
 // const getUsers = (req, res) => {
