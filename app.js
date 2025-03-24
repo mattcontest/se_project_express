@@ -6,6 +6,7 @@ const { errors } = require("celebrate");
 const indexRouter = require("./routes/index");
 const errorHandler = require("./middlewares/error-handler");
 const { requestLogger, errorLogger } = require("./middlewares/logger");
+const { limiter } = require("./middlewares/express-limiter");
 
 const app = express();
 const { PORT = 3001 } = process.env;
@@ -28,6 +29,9 @@ app.use(express.json());
 //   console.log("Adding this to res", req.user);
 //   next();
 // });
+
+//Implemented Express Rate Limiter to prevent DoS attacks
+app.use(limiter);
 app.use(requestLogger);
 
 app.use("/", indexRouter);
