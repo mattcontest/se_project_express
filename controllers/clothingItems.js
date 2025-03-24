@@ -1,12 +1,12 @@
 const { default: mongoose } = require("mongoose");
 const ClothingItem = require("../models/clothingItem");
 // const NotFoundError = require("../customErrors/notFoundError");
-const {
-  badRequest,
-  notFound,
-  // ServerError,
-  assertionError,
-} = require("../utils/errors");
+// const {
+// badRequest,
+// notFound,
+// ServerError,
+// assertionError,
+// } = require("../utils/errors");
 const BadRequest = require("../errors/bad-request-err");
 const NotFoundError = require("../errors/not-found-error");
 const AssertionError = require("../customErrors/assertionError");
@@ -225,7 +225,7 @@ const dislikeItem = (req, res, next) => {
         // return res
         // .status(notFound)
         // .send({ message: "Requested resource not found" });
-        next(new NotFound("Requested resource not found"));
+        next(new NotFoundError("Requested resource not found"));
       }
 
       return res.status(200).json(updatedItem);

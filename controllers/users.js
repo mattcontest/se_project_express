@@ -5,12 +5,14 @@ const { JWT_SECRET } = require("../utils/config");
 const {
   badRequest,
   notFound,
-  serverError,
+  // serverError,
   // ConflictError,
-  unauthorizedError,
+  // unauthorizedError,
 } = require("../utils/errors");
 const ConflictError = require("../errors/conflitct-error");
 const UnauthorizedError = require("../errors/unauthorized-error");
+const NotFoundError = require("../errors/not-found-error");
+const BadRequestError = require("../errors/bad-request-err");
 
 // const getUsers = (req, res) => {
 //   User.find({})
@@ -59,7 +61,7 @@ const createUser = (req, res, next) => {
     });
 };
 
-const login = (req, res) => {
+const login = (req, res, next) => {
   const { email, password } = req.body;
   if (!email || !password) {
     return res
@@ -86,7 +88,7 @@ const login = (req, res) => {
     });
 };
 
-const getCurrentUser = (req, res) => {
+const getCurrentUser = (req, res, next) => {
   const { _id: userId } = req.user;
   console.log(req.user);
   console.log("Req.params current user", userId);
@@ -95,20 +97,25 @@ const getCurrentUser = (req, res) => {
     .then((user) => res.status(200).send(user))
     .catch((err) => {
       if (err.name === "DocumentNotFoundError") {
-        return res.status(notFound).send({ message: `${userId} not found` });
+        // return res.status(notFound).send({ message: `${userId} not found` });
+        next(new NotFoundError(`${userId} not found`));
       }
       if (err.name === "CastError") {
-        return res
-          .status(badRequest)
-          .send({ message: `Bad Request -- Cast Error when getUsersById` });
+        // return res
+        //   .status(badRequest)
+        //   .send({ message: `Bad Request -- Cast Error when getUsersById` });
+        next(
+          new BadRequestError("Bad Request -- Cast Error when getUsersById")
+        );
       }
-      return res
-        .status(serverError)
-        .send({ message: "500 Server Error when attempting to getUserById" });
+      // return res
+      //   .status(serverError)
+      //   .send({ message: "500 Server Error when attempting to getUserById" });
+      next(err);
     });
 };
 
-const updateUser = (req, res) => {
+const updateUser = (req, res, next) => {
   const { _id } = req.user;
   const { name, avatar } = req.body;
   User.findByIdAndUpdate(
@@ -127,14 +134,17 @@ const updateUser = (req, res) => {
     })
     .catch((err) => {
       if (err.name === "Not Found") {
-        return res.status(notFound).send({ message: "Not found" });
+        // return res.status(notFound).send({ message: "Not found" });
+        next(new NotFoundError("Not Found"));
       }
       if (err.name === "ValidationError") {
-        return res
-          .status(badRequest)
-          .send({ message: "400 Bad Request when updating user" });
+        // return res
+        //   .status(badRequest)
+        //   .send({ message: "400 Bad Request when updating user" });
+        next(new BadRequestError("400 Bad Request when updating user"));
       }
-      return res.status(serverError).send({ message: "Server Error" });
+      // return res.status(serverError).send({ message: "Server Error" });
+      next(err);
     });
 };
 
