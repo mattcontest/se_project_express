@@ -10,7 +10,7 @@ const validateURL = (value, helpers) => {
 const validateClothingItem = celebrate({
   body: Joi.object().keys({
     title: Joi.string().min(2).max(30).required(),
-    imageUrl: Joi.string().url().required(),
+    imageUrl: Joi.string().custom(validateURL).required(),
   }),
 });
 
