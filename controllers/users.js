@@ -6,9 +6,10 @@ const {
   badRequest,
   notFound,
   serverError,
-  conflictError,
+  // ConflictError,
   unauthorizedError,
 } = require("../utils/errors");
+const ConflictError = require("../errors/conflitct-error");
 
 // const getUsers = (req, res) => {
 //   User.find({})
@@ -23,7 +24,7 @@ const {
 //     });
 // };
 
-const createUser = (req, res) => {
+const createUser = (req, res, next) => {
   const { name, avatar, email, password } = req.body;
   console.log("Req.body", name, avatar);
   bcrypt
@@ -39,19 +40,21 @@ const createUser = (req, res) => {
     })
     .catch((err) => {
       if (err.code === 11000) {
-        return res
-          .status(conflictError)
-          .send({ message: "Email already used" });
+        // return res
+        //   .status(conflictError)
+        //   .send({ message: "Email already used" });
+        next(new ConflictError("Email arleady used!"));
       }
       if (err.name === "ValidationError") {
-        return res
-          .status(badRequest)
-          .send({ message: "400 Bad Request when creating a user" });
+        // return res
+        //   .status(badRequest)
+        //   .send({ message: "400 Bad Request when creating a user" });
       }
 
-      return res
-        .status(serverError)
-        .send({ message: "500 Server Error when creating a user" });
+      // return res
+      // .status(serverError)
+      // .send({ message: "500 Server Error when creating a user" });
+      next(err);
     });
 };
 

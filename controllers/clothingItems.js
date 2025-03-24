@@ -1,12 +1,15 @@
 const { default: mongoose } = require("mongoose");
 const ClothingItem = require("../models/clothingItem");
-const NotFoundError = require("../customErrors/notFoundError");
+// const NotFoundError = require("../customErrors/notFoundError");
 const {
   badRequest,
   notFound,
-  serverError,
+  // ServerError,
   assertionError,
 } = require("../utils/errors");
+const BadRequest = require("../errors/bad-request-err");
+const NotFoundError = require("../errors/not-found-error");
+const AssertionError = require("../customErrors/assertionError");
 
 const getItems = (req, res, next) => {
   ClothingItem.find({})
@@ -62,7 +65,7 @@ const createItem = (req, res, next) => {
         // return res
         //   .status(badRequest)
         //   .send({ message: "400 Bad Request when creating Item" });
-        next(new badRequest("400 Bad Request when creating Item"));
+        next(new BadRequest("400 Bad Request when creating Item"));
       }
       // return res
       //   .status(serverError)
@@ -77,7 +80,7 @@ const deleteItem = (req, res, next) => {
 
   if (!mongoose.Types.ObjectId.isValid(itemId)) {
     return res
-      .status(badRequest)
+      .status(BadRequest)
       .send({ message: "Invalid Item Id ~ Cannot proceed with deletion" });
   }
 
@@ -99,7 +102,7 @@ const deleteItem = (req, res, next) => {
         //   "You do not have the permission to delete this item"
         // );
         // return res.status(assertionError).send({ message: "Assertion Error" });
-        throw new assertionError(
+        throw new AssertionError(
           "You don't have the permission to delete this item"
         );
       }
@@ -111,7 +114,7 @@ const deleteItem = (req, res, next) => {
     .catch((err) => {
       if (err.name === "CastError") {
         next(
-          new badRequest("Invalid Data: 400 Bad Request when deleting an item")
+          new BadRequest("Invalid Data: 400 Bad Request when deleting an item")
         );
         // return res
         //   .status(badRequest)
@@ -123,7 +126,7 @@ const deleteItem = (req, res, next) => {
         //   message: "400 Bad Request ~ Invalid ID cannot proceed with deletion",
         // });
         next(
-          new badRequest(
+          new BadRequest(
             "400 Bad Request ~ Invalid ID cannot proceed with deletion"
           )
         );
@@ -133,7 +136,7 @@ const deleteItem = (req, res, next) => {
         // return res
         //   .status(notFound)
         //   .send({ message: "Item id not found ~ Cannot delete" });
-        next(notFound("Item id not found ~ Cannot delete"));
+        next(NotFoundError("Item id not found ~ Cannot delete"));
       }
 
       // return res.status(serverError).send({ message: "500 Server Error" });
@@ -186,14 +189,14 @@ const likeItem = (req, res, next) => {
         // return res
         //   .status(notFound)
         //   .send({ message: "Not existing id in the db" });
-        next(notFound("Not exisisting ID in the Database"));
+        next(NotFoundError("Not exisisting ID in the Database"));
       }
 
       if (err.name === "CastError") {
         // return res
         // .status(badRequest)
         // .send({ message: "CastError when attempting to like an item" });
-        next(new badRequest("CastErrpr when ateemptong to like an item"));
+        next(new BadRequest("CastErrpr when ateemptong to like an item"));
       }
       //   return res
       //     .status(serverError)
@@ -207,7 +210,7 @@ const dislikeItem = (req, res, next) => {
 
   if (!mongoose.Types.ObjectId.isValid(itemId)) {
     return res
-      .status(badRequest)
+      .status(BadRequest)
       .send({ message: "Bad Request: Invalid Format!" });
   }
 
@@ -219,22 +222,25 @@ const dislikeItem = (req, res, next) => {
     .populate("owner")
     .then((updatedItem) => {
       if (!updatedItem) {
-        return res
-          .status(notFound)
-          .send({ message: "Requested resource not found" });
+        // return res
+        // .status(notFound)
+        // .send({ message: "Requested resource not found" });
+        next(new NotFound("Requested resource not found"));
       }
 
       return res.status(200).json(updatedItem);
     })
     .catch((err) => {
       if (err.name === "CastError") {
-        return res
-          .status(badRequest)
-          .send({ message: "Bad Request: Cast Error when disliking an item" });
+        // return res
+        // .status(badRequest)
+        // .send({ message: "Bad Request: Cast Error when disliking an item" });
+        next(new BadRequest("Bad Request: Cast Error when disliking an item"));
       }
-      return res
-        .status(serverError)
-        .send({ message: "500 Server Error when deleting an  Item" });
+      // return res
+      // .status(serverError)
+      // .send({ message: "500 Server Error when deleting an  Item" });
+      next(err);
     });
 };
 
