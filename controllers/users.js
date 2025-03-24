@@ -10,6 +10,7 @@ const {
   unauthorizedError,
 } = require("../utils/errors");
 const ConflictError = require("../errors/conflitct-error");
+const UnauthorizedError = require("../errors/unauthorized-error");
 
 // const getUsers = (req, res) => {
 //   User.find({})
@@ -74,12 +75,14 @@ const login = (req, res) => {
     })
     .catch((err) => {
       if (err.message.includes("Incorrect email or password")) {
-        return res
-          .status(unauthorizedError)
-          .send({ message: "Incorrect email or password ~ 401" });
+        next(new UnauthorizedError("Incorrect email or password ~ 401"));
+        // return res
+        //   .status(unauthorizedError)
+        //   .send({ message: "Incorrect email or password ~ 401" });
       }
 
-      return res.status(serverError).send({ message: "Authentication Failed" });
+      // return res.status(serverError).send({ message: "Authentication Failed" });
+      next(err);
     });
 };
 
