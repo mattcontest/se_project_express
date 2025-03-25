@@ -223,7 +223,7 @@ const dislikeItem = (req, res, next) => {
   )
     .populate("owner")
     .orFail()
-    .then((updatedItem) => {
+    .then((updatedItem) =>
       // if (!updatedItem) {
       // return res
       // .status(notFound)
@@ -231,8 +231,8 @@ const dislikeItem = (req, res, next) => {
       // next(new NotFoundError("Requested resource not found"));
       // }
 
-      return res.status(200).json(updatedItem);
-    })
+      res.status(200).json(updatedItem)
+    )
     .catch((err) => {
       if (err.name === "DocumentNotFoundError") {
         next(new NotFoundError("Requested resource not found!"));

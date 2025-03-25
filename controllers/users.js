@@ -2,13 +2,6 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 const { JWT_SECRET } = require("../utils/config");
-const {
-  badRequest,
-  notFound,
-  // serverError,
-  // ConflictError,
-  // unauthorizedError,
-} = require("../utils/errors");
 const ConflictError = require("../errors/conflitct-error");
 const UnauthorizedError = require("../errors/unauthorized-error");
 const NotFoundError = require("../errors/notFoundError");
@@ -49,6 +42,7 @@ const createUser = (req, res, next) => {
         next(new ConflictError("Email arleady used!"));
       }
       if (err.name === "ValidationError") {
+        next(new BadRequestError("400 Bad Request when creating a user"));
         // return res
         //   .status(badRequest)
         //   .send({ message: "400 Bad Request when creating a user" });
@@ -64,9 +58,10 @@ const createUser = (req, res, next) => {
 const login = (req, res, next) => {
   const { email, password } = req.body;
   if (!email || !password) {
-    return res
-      .status(badRequest)
-      .send({ message: "Both email and password fields are required!" });
+    // return res
+    //   .status(badRequest)
+    //   .send({ message: "Both email and password fields are required!" });
+    throw new BadRequestError("Both email and password fields are required!");
   }
   return User.findUserByCredentials(email, password)
     .then((user) => {
@@ -123,7 +118,8 @@ const updateUser = (req, res, next) => {
     { name, avatar },
     { new: true, runValidators: true }
   )
-    .orFail(() => res.status(notFound).send({ message: `id not found` }))
+    // .orFail(() => res.status(notFound).send({ message: `id not found` }))
+    .orFail()
     .then((user) => {
       res.status(200).send({
         _id: user._id,
@@ -133,9 +129,9 @@ const updateUser = (req, res, next) => {
       });
     })
     .catch((err) => {
-      if (err.name === "Not Found") {
+      if (err.name === "DocumentNotFoundError") {
         // return res.status(notFound).send({ message: "Not found" });
-        next(new NotFoundError("Not Found"));
+        next(new NotFoundError("DocumentNotFoundError"));
       }
       if (err.name === "ValidationError") {
         // return res

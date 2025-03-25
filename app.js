@@ -30,7 +30,8 @@ app.use(express.json());
 //   next();
 // });
 
-//Implemented Express Rate Limiter to prevent DoS attacks
+// Implemented Express Rate Limiter to prevent DoS attacks
+
 app.use(limiter);
 app.use(requestLogger);
 
