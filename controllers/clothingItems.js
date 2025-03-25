@@ -79,9 +79,10 @@ const deleteItem = (req, res, next) => {
   const loggedUser = req.user._id;
 
   if (!mongoose.Types.ObjectId.isValid(itemId)) {
-    return res
-      .status(BadRequest)
-      .send({ message: "Invalid Item Id ~ Cannot proceed with deletion" });
+    // return res
+    // .status(BadRequest)
+    // .send({ message: "Invalid Item Id ~ Cannot proceed with deletion" });
+    next(new BadRequest("Invalid Item Id ~ Cannot proceed with deletion"));
   }
 
   return ClothingItem.findById(itemId)
@@ -209,9 +210,10 @@ const dislikeItem = (req, res, next) => {
   const { itemId } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(itemId)) {
-    return res
-      .status(BadRequest)
-      .send({ message: "Bad Request: Invalid Format!" });
+    // return res
+    //   .status(BadRequest)
+    //   .send({ message: "Bad Request: Invalid Format!" });
+    next(new BadRequest("Bad Request: Invalid Format!"));
   }
 
   return ClothingItem.findByIdAndUpdate(
